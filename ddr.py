@@ -1,216 +1,283 @@
-import os, re, json
+import os
+import re
+import json
+import subprocess
+
 import pdfplumber
-import fitz
+import fitz  # pymupdf
 import faiss
 import numpy as np
 from sentence_transformers import SentenceTransformer
 
-# -----------------------------
+
+# =======================
 # CONFIG
-# -----------------------------
-INSPECTION_PDF = "input/Sample_Report.pdf"
-THERMAL_PDF = "input/Thermal_Images.pdf"
-IMG_INS_DIR = "images/inspection"
-IMG_TH_DIR = "images/thermal"
+# =======================
+INSPECTION_PDF = "input/inspection.pdf"
+THERMAL_PDF = "input/thermal.pdf"
+
+INS_IMG_DIR = "images/inspection"
 OUT_MD = "build/ddr.md"
 
 AREAS = [
-    "Hall", "Bedroom", "Master Bedroom",
-    "Kitchen", "Common Bathroom",
-    "Parking Area", "External Wall"
+    "Hall",
+    "Bedroom",
+    "Master Bedroom",
+    "Kitchen",
+    "Common Bathroom",
+    "Parking Area",
+    "External Wall",
+    "Balcony",
+    "Terrace"
 ]
 
-# photo-number → area mapping (from inspection report structure)
-AREA_IMAGE_MAP = {
-    "Hall": range(1, 8),
-    "Bedroom": range(8, 15),
-    "Master Bedroom": range(15, 31),
-    "Kitchen": range(31, 33),
-    "Parking Area": range(49, 53),
-    "Common Bathroom": range(53, 65),
-    "External Wall": range(42, 49)
-}
 
-# -----------------------------
+# =======================
 # UTILS
-# -----------------------------
+# =======================
 def ensure_dirs():
-    os.makedirs(IMG_INS_DIR, exist_ok=True)
-    os.makedirs(IMG_TH_DIR, exist_ok=True)
-    os.makedirs("build", exist_ok=True)
+    for d in [INS_IMG_DIR, "build"]:
+        os.makedirs(d, exist_ok=True)
+
 
 def clean(text):
     return re.sub(r"\s+", " ", text).strip()
 
-# -----------------------------
-# TEXT EXTRACTION
-# -----------------------------
-def extract_text(pdf):
+
+# =======================
+# PAGE NUMBER MAPPING
+# =======================
+def extract_visible_page_numbers(pdf_path):
+    mapping = {}
+    with pdfplumber.open(pdf_path) as pdf:
+        for i, page in enumerate(pdf.pages, start=1):
+            text = page.extract_text() or ""
+            m = re.search(r"Page\s*(\d+)", text)
+            mapping[i] = int(m.group(1)) if m else i
+    return mapping
+
+
+# =======================
+# TEXT EXTRACTION (USED FOR BOTH PDFs)
+# =======================
+def extract_text(pdf_path):
     pages = []
-    with pdfplumber.open(pdf) as p:
-        for i, page in enumerate(p.pages, 1):
-            t = page.extract_text()
-            if t:
-                pages.append({"page": i, "text": clean(t)})
+    with pdfplumber.open(pdf_path) as pdf:
+        for i, page in enumerate(pdf.pages, start=1):
+            text = page.extract_text()
+            if text:
+                pages.append({
+                    "page": i,
+                    "text": clean(text)
+                })
     return pages
 
-# -----------------------------
-# IMAGE EXTRACTION
-# -----------------------------
-def extract_images(pdf, out_dir):
-    doc = fitz.open(pdf)
+
+# =======================
+# INSPECTION IMAGE EXTRACTION ONLY
+# =======================
+def extract_inspection_images(pdf_path, out_dir):
+    doc = fitz.open(pdf_path)
+    page_map = extract_visible_page_numbers(pdf_path)
     images = []
-    for pno, page in enumerate(doc, 1):
+
+    for pdf_page, page in enumerate(doc, start=1):
+        visible_page = page_map.get(pdf_page, pdf_page)
+
         for idx, img in enumerate(page.get_images(full=True)):
-            xref = img[0]
-            base = doc.extract_image(xref)
-            name = f"page{pno}_img{idx}.{base['ext']}"
+            base = doc.extract_image(img[0])
+            w, h = base["width"], base["height"]
+            area = w * h
+            ratio = w / h if h else 0
+
+            # Filters
+            if w < 300 or h < 300:
+                continue
+            if area < 150_000:
+                continue
+            if 0.85 < ratio < 1.15 and area < 400_000:
+                continue
+
+            name = f"page{visible_page}_img{idx}.{base['ext']}"
             path = os.path.join(out_dir, name)
+
             with open(path, "wb") as f:
                 f.write(base["image"])
-            images.append({"page": pno, "path": path})
+
+            images.append({
+                "page": visible_page,
+                "path": path
+            })
+
     return images
 
-def photo_number(path):
-    m = re.search(r"Photo\s*(\d+)", path)
-    return int(m.group(1)) if m else None
 
-# -----------------------------
+# =======================
 # CHUNKING
-# -----------------------------
-def inspection_chunks(pages):
+# =======================
+def chunk_by_area(pages, source):
     chunks = []
     for p in pages:
         for area in AREAS:
             if area.lower() in p["text"].lower():
                 chunks.append({
                     "area": area,
-                    "source": "inspection",
+                    "source": source,
                     "text": p["text"]
                 })
     return chunks
 
-def thermal_chunks(pages):
-    chunks = []
-    for p in pages:
-        h = re.search(r"Hotspot\s*:\s*([\d.]+)", p["text"])
-        c = re.search(r"Coldspot\s*:\s*([\d.]+)", p["text"])
-        chunks.append({
-            "area": "Not Specified",
-            "source": "thermal",
-            "hotspot": h.group(1) if h else "NA",
-            "coldspot": c.group(1) if c else "NA",
-            "text": p["text"]
-        })
-    return chunks
 
-# -----------------------------
-# VECTOR STORE (RAG)
-# -----------------------------
+# =======================
+# RAG (FAISS)
+# =======================
 def build_index(docs):
-    model = SentenceTransformer("all-MiniLM-L6-v2")
-    texts = [d["text"] for d in docs]
-    emb = model.encode(texts)
-    index = faiss.IndexFlatL2(emb.shape[1])
-    index.add(np.array(emb))
-    return model, index
+    embedder = SentenceTransformer("all-MiniLM-L6-v2")
+    embeddings = embedder.encode([d["text"] for d in docs])
+    index = faiss.IndexFlatL2(embeddings.shape[1])
+    index.add(np.array(embeddings))
+    return embedder, index
 
-def retrieve(model, index, docs, query, k=4):
-    q = model.encode([query])
+
+def retrieve(embedder, index, docs, query, k=6):
+    q = embedder.encode([query])
     _, idx = index.search(np.array(q), k)
     return [docs[i] for i in idx[0]]
 
-# -----------------------------
-# IMAGE ASSIGNMENT
-# -----------------------------
-def images_for_area(area, images):
-    nums = AREA_IMAGE_MAP.get(area, [])
-    return [i["path"] for i in images if any(str(n) in i["path"] for n in nums)]
 
-# -----------------------------
-# DDR GENERATION (RULE-BASED TEXT)
-# -----------------------------
-def generate_ddr(areas, docs, model, index, ins_imgs, th_imgs):
-    md = ["# Detailed Diagnostic Report\n"]
-
-    md.append("## 1. Property Issue Summary")
-    md.append(
-        "- Dampness and paint deterioration observed at skirting and ceiling levels.\n"
-        "- Gaps in tile joints observed in bathrooms and balcony.\n"
-        "- Cracks observed on external walls.\n"
-        "- Thermal readings show temperature variations at affected locations.\n"
+# =======================
+# LLM (OLLAMA)
+# =======================
+def llm(prompt):
+    result = subprocess.run(
+        ["ollama", "run", "llama3"],
+        input=prompt,
+        text=True,
+        capture_output=True
     )
+    return result.stdout.strip()
 
-    md.append("## 2. Area-wise Observations")
 
-    for area in areas:
-        ctx = retrieve(model, index, docs, area)
-        md.append(f"### {area}")
-        for c in ctx:
-            md.append(f"- {c['text'][:300]}")
+# =======================
+# DDR GENERATION
+# =======================
+def generate_ddr(embedder, index, docs):
+    sections = {}
 
-        imgs = images_for_area(area, ins_imgs)
-        for img in imgs[:2]:
-            md.append(f"![{area}]({img})")
+    sections["summary"] = llm(f"""
+Generate Property Issue Summary.
 
-    md.append("## 3. Probable Root Cause")
-    md.append(
-        "- Gaps in tile joints allowing moisture ingress.\n"
-        "- Concealed plumbing issues reported.\n"
-        "- External wall cracks allowing rainwater ingress.\n"
-    )
+Rules:
+- Use ONLY provided context
+- Do NOT assume causes
 
-    md.append("## 4. Severity Assessment")
-    md.append(
-        "**Severity: Medium to High**\n\n"
-        "Multiple areas affected with prolonged moisture exposure."
-    )
+Context:
+{json.dumps(retrieve(embedder, index, docs, "overall property issues"), indent=2)}
+""")
 
-    md.append("## 5. Recommended Actions")
-    md.append(
-        "- Repair tile joints in wet areas.\n"
-        "- Inspect and repair plumbing lines.\n"
-        "- Seal external wall cracks.\n"
-        "- Repair plaster and repaint after drying.\n"
-    )
+    area_text = ""
+    for area in AREAS:
+        ctx = retrieve(embedder, index, docs, f"{area} dampness leakage thermal")
+        if not ctx:
+            continue
 
-    md.append("## 6. Additional Notes")
-    md.append(
-        "- Thermal readings support moisture presence.\n"
-        "- Observations limited to visible areas.\n"
-    )
+        area_text += f"\n### {area}\n"
+        area_text += llm(f"""
+Write observations for {area}.
 
-    md.append("## 7. Missing or Unclear Information")
-    md.append(
-        "- Plumbing layout: Not Available\n"
-        "- Moisture meter readings: Not Available\n"
-        "- Active leakage confirmation: Not Available\n"
-    )
+Rules:
+- Use inspection observations
+- Use thermal data ONLY if explicitly mentioned in text
+- Do NOT describe thermal images
 
-    return "\n".join(md)
+Context:
+{json.dumps(ctx, indent=2)}
+""")
 
-# -----------------------------
+    sections["areas"] = area_text
+
+    sections["root"] = llm(f"""
+Generate Probable Root Cause.
+
+Rules:
+- Only mention causes supported by text
+- If unclear, write "Not Available"
+
+Context:
+{json.dumps(retrieve(embedder, index, docs, "root cause leakage"), indent=2)}
+""")
+
+    sections["severity"] = llm(f"""
+Assess severity (Low / Medium / High) with reasoning.
+
+Context:
+{json.dumps(retrieve(embedder, index, docs, "extent damage severity"), indent=2)}
+""")
+
+    sections["actions"] = llm(f"""
+Generate Recommended Actions.
+
+Rules:
+- Conservative
+- No guarantees
+- No product names
+
+Context:
+{json.dumps(retrieve(embedder, index, docs, "recommended repairs"), indent=2)}
+""")
+
+    return sections
+
+
+# =======================
 # MAIN
-# -----------------------------
+# =======================
 def main():
     ensure_dirs()
 
-    ins_text = extract_text(INSPECTION_PDF)
-    th_text = extract_text(THERMAL_PDF)
+    inspection_text = extract_text(INSPECTION_PDF)
+    thermal_text = extract_text(THERMAL_PDF)
 
-    ins_imgs = extract_images(INSPECTION_PDF, IMG_INS_DIR)
-    th_imgs = extract_images(THERMAL_PDF, IMG_TH_DIR)
+    extract_inspection_images(INSPECTION_PDF, INS_IMG_DIR)
 
-    docs = inspection_chunks(ins_text) + thermal_chunks(th_text)
+    docs = (
+        chunk_by_area(inspection_text, "inspection") +
+        chunk_by_area(thermal_text, "thermal")
+    )
 
-    model, index = build_index(docs)
+    embedder, index = build_index(docs)
+    ddr = generate_ddr(embedder, index, docs)
 
-    ddr = generate_ddr(AREAS, docs, model, index, ins_imgs, th_imgs)
+    with open(OUT_MD, "w", encoding="utf-8") as f:
+        f.write(f"""
+# Detailed Diagnostic Report
 
-    with open(OUT_MD, "w") as f:
-        f.write(ddr)
+## 1. Property Issue Summary
+{ddr['summary']}
 
-    print("DDR generated:", OUT_MD)
+## 2. Area-wise Observations
+{ddr['areas']}
+
+## 3. Probable Root Cause
+{ddr['root']}
+
+## 4. Severity Assessment
+{ddr['severity']}
+
+## 5. Recommended Actions
+{ddr['actions']}
+
+## 6. Additional Notes
+Observations are based on accessible areas only. Thermal analysis is derived from temperature readings provided in the report.
+
+## 7. Missing or Unclear Information
+- Plumbing layout: Not Available
+- Moisture meter readings: Not Available
+- Active leakage confirmation: Not Available
+""")
+
+    print("DDR generated successfully:", OUT_MD)
+
 
 if __name__ == "__main__":
     main()
