@@ -1,216 +1,300 @@
-import os, re, json
+import os
+import re
+import json
+import subprocess
+
 import pdfplumber
 import fitz
 import faiss
 import numpy as np
 from sentence_transformers import SentenceTransformer
 
-# -----------------------------
+
+# =======================
 # CONFIG
-# -----------------------------
-INSPECTION_PDF = "input/Sample_Report.pdf"
-THERMAL_PDF = "input/Thermal_Images.pdf"
-IMG_INS_DIR = "images/inspection"
-IMG_TH_DIR = "images/thermal"
+# =======================
+INSPECTION_PDF = "input/inspection.pdf"
+THERMAL_PDF = "input/thermal.pdf"
+
+INS_IMG_DIR = "images/inspection"
 OUT_MD = "build/ddr.md"
 
-AREAS = [
-    "Hall", "Bedroom", "Master Bedroom",
-    "Kitchen", "Common Bathroom",
-    "Parking Area", "External Wall"
+ALL_AREAS = [
+    "Hall",
+    "Bedroom",
+    "Master Bedroom",
+    "Kitchen",
+    "Common Bathroom",
+    "Parking Area",
+    "External Wall",
+    "Balcony",
+    "Terrace"
 ]
 
-# photo-number → area mapping (from inspection report structure)
-AREA_IMAGE_MAP = {
-    "Hall": range(1, 8),
-    "Bedroom": range(8, 15),
-    "Master Bedroom": range(15, 31),
-    "Kitchen": range(31, 33),
-    "Parking Area": range(49, 53),
-    "Common Bathroom": range(53, 65),
-    "External Wall": range(42, 49)
-}
 
-# -----------------------------
+# =======================
 # UTILS
-# -----------------------------
+# =======================
 def ensure_dirs():
-    os.makedirs(IMG_INS_DIR, exist_ok=True)
-    os.makedirs(IMG_TH_DIR, exist_ok=True)
-    os.makedirs("build", exist_ok=True)
+    for d in [INS_IMG_DIR, "build"]:
+        os.makedirs(d, exist_ok=True)
+
 
 def clean(text):
     return re.sub(r"\s+", " ", text).strip()
 
-# -----------------------------
+
+# =======================
 # TEXT EXTRACTION
-# -----------------------------
-def extract_text(pdf):
+# =======================
+def extract_text(pdf_path):
     pages = []
-    with pdfplumber.open(pdf) as p:
-        for i, page in enumerate(p.pages, 1):
-            t = page.extract_text()
-            if t:
-                pages.append({"page": i, "text": clean(t)})
+    with pdfplumber.open(pdf_path) as pdf:
+        for i, page in enumerate(pdf.pages, start=1):
+            text = page.extract_text()
+            if text:
+                pages.append({
+                    "page": i,
+                    "text": clean(text)
+                })
     return pages
 
-# -----------------------------
+
+# =======================
+# IMPACTED AREAS
+# =======================
+def extract_impacted_areas(pages):
+    for p in pages:
+        if "Impacted Areas/Rooms" in p["text"]:
+            parts = re.split(r",|\n", p["text"])
+            areas = []
+            for part in parts:
+                part = part.strip()
+                if part in ALL_AREAS:
+                    areas.append(part)
+            return list(dict.fromkeys(areas))
+    return []
+
+
+# =======================
 # IMAGE EXTRACTION
-# -----------------------------
-def extract_images(pdf, out_dir):
-    doc = fitz.open(pdf)
+# =======================
+def extract_inspection_images(pdf_path, out_dir):
+    doc = fitz.open(pdf_path)
     images = []
-    for pno, page in enumerate(doc, 1):
+
+    for page_no, page in enumerate(doc, start=1):
         for idx, img in enumerate(page.get_images(full=True)):
-            xref = img[0]
-            base = doc.extract_image(xref)
-            name = f"page{pno}_img{idx}.{base['ext']}"
+            base = doc.extract_image(img[0])
+            w, h = base["width"], base["height"]
+            area = w * h
+            ratio = w / h if h else 0
+
+            if w < 300 or h < 300:
+                continue
+            if area < 150_000:
+                continue
+            if 0.85 < ratio < 1.15 and area < 400_000:
+                continue
+
+            name = f"page{page_no}_img{idx}.{base['ext']}"
             path = os.path.join(out_dir, name)
+
             with open(path, "wb") as f:
                 f.write(base["image"])
-            images.append({"page": pno, "path": path})
+
+            images.append({
+                "page": page_no,
+                "path": path
+            })
+
     return images
 
-def photo_number(path):
-    m = re.search(r"Photo\s*(\d+)", path)
-    return int(m.group(1)) if m else None
 
-# -----------------------------
+# =======================
 # CHUNKING
-# -----------------------------
-def inspection_chunks(pages):
+# =======================
+def chunk_by_area(pages, source, areas):
     chunks = []
     for p in pages:
-        for area in AREAS:
+        for area in areas:
             if area.lower() in p["text"].lower():
                 chunks.append({
                     "area": area,
-                    "source": "inspection",
+                    "page": p["page"],
+                    "source": source,
                     "text": p["text"]
                 })
     return chunks
 
-def thermal_chunks(pages):
-    chunks = []
-    for p in pages:
-        h = re.search(r"Hotspot\s*:\s*([\d.]+)", p["text"])
-        c = re.search(r"Coldspot\s*:\s*([\d.]+)", p["text"])
-        chunks.append({
-            "area": "Not Specified",
-            "source": "thermal",
-            "hotspot": h.group(1) if h else "NA",
-            "coldspot": c.group(1) if c else "NA",
-            "text": p["text"]
-        })
-    return chunks
 
-# -----------------------------
-# VECTOR STORE (RAG)
-# -----------------------------
+# =======================
+# IMAGE ↔ AREA LINKING
+# =======================
+def map_images_to_areas(images, chunks):
+    area_images = {a["area"]: [] for a in chunks}
+
+    for chunk in chunks:
+        area = chunk["area"]
+        page = chunk["page"]
+
+        for img in images:
+            if img["page"] == page:
+                area_images.setdefault(area, []).append(img)
+
+    return area_images
+
+
+# =======================
+# RAG
+# =======================
 def build_index(docs):
-    model = SentenceTransformer("all-MiniLM-L6-v2")
-    texts = [d["text"] for d in docs]
-    emb = model.encode(texts)
-    index = faiss.IndexFlatL2(emb.shape[1])
-    index.add(np.array(emb))
-    return model, index
+    embedder = SentenceTransformer("all-MiniLM-L6-v2")
+    embeddings = embedder.encode([d["text"] for d in docs])
+    index = faiss.IndexFlatL2(embeddings.shape[1])
+    index.add(np.array(embeddings))
+    return embedder, index
 
-def retrieve(model, index, docs, query, k=4):
-    q = model.encode([query])
+
+def retrieve(embedder, index, docs, query, k=6):
+    q = embedder.encode([query])
     _, idx = index.search(np.array(q), k)
     return [docs[i] for i in idx[0]]
 
-# -----------------------------
-# IMAGE ASSIGNMENT
-# -----------------------------
-def images_for_area(area, images):
-    nums = AREA_IMAGE_MAP.get(area, [])
-    return [i["path"] for i in images if any(str(n) in i["path"] for n in nums)]
 
-# -----------------------------
-# DDR GENERATION (RULE-BASED TEXT)
-# -----------------------------
-def generate_ddr(areas, docs, model, index, ins_imgs, th_imgs):
-    md = ["# Detailed Diagnostic Report\n"]
-
-    md.append("## 1. Property Issue Summary")
-    md.append(
-        "- Dampness and paint deterioration observed at skirting and ceiling levels.\n"
-        "- Gaps in tile joints observed in bathrooms and balcony.\n"
-        "- Cracks observed on external walls.\n"
-        "- Thermal readings show temperature variations at affected locations.\n"
+# =======================
+# LLM
+# =======================
+def llm(prompt):
+    result = subprocess.run(
+        ["ollama", "run", "llama3"],
+        input=prompt,
+        text=True,
+        capture_output=True
     )
+    return result.stdout.strip()
 
-    md.append("## 2. Area-wise Observations")
 
-    for area in areas:
-        ctx = retrieve(model, index, docs, area)
-        md.append(f"### {area}")
-        for c in ctx:
-            md.append(f"- {c['text'][:300]}")
+# =======================
+# DDR GENERATION
+# =======================
+def generate_ddr(embedder, index, docs, impacted_areas, area_images):
+    sections = {}
 
-        imgs = images_for_area(area, ins_imgs)
-        for img in imgs[:2]:
-            md.append(f"![{area}]({img})")
+    sections["summary"] = llm(f"""
+Generate Property Issue Summary.
+Use ONLY provided context.
 
-    md.append("## 3. Probable Root Cause")
-    md.append(
-        "- Gaps in tile joints allowing moisture ingress.\n"
-        "- Concealed plumbing issues reported.\n"
-        "- External wall cracks allowing rainwater ingress.\n"
-    )
+Context:
+{json.dumps(retrieve(embedder, index, docs, "overall property issues"), indent=2)}
+""")
 
-    md.append("## 4. Severity Assessment")
-    md.append(
-        "**Severity: Medium to High**\n\n"
-        "Multiple areas affected with prolonged moisture exposure."
-    )
+    area_text = ""
+    for area in impacted_areas:
+        ctx = retrieve(embedder, index, docs, area)
+        area_text += f"\n### {area}\n"
 
-    md.append("## 5. Recommended Actions")
-    md.append(
-        "- Repair tile joints in wet areas.\n"
-        "- Inspect and repair plumbing lines.\n"
-        "- Seal external wall cracks.\n"
-        "- Repair plaster and repaint after drying.\n"
-    )
+        area_text += llm(f"""
+Write observations for {area}.
+Grounded only.
 
-    md.append("## 6. Additional Notes")
-    md.append(
-        "- Thermal readings support moisture presence.\n"
-        "- Observations limited to visible areas.\n"
-    )
+Context:
+{json.dumps(ctx, indent=2)}
+""")
 
-    md.append("## 7. Missing or Unclear Information")
-    md.append(
-        "- Plumbing layout: Not Available\n"
-        "- Moisture meter readings: Not Available\n"
-        "- Active leakage confirmation: Not Available\n"
-    )
+        imgs = area_images.get(area, [])
+        if imgs:
+            area_text += "\n**Supporting Visual Evidence:**\n"
+            for img in imgs:
+                rel_path = os.path.relpath(img["path"], start="build")
+                area_text += f"\n![Inspection image – Page {img['page']}]({rel_path})\n"
 
-    return "\n".join(md)
 
-# -----------------------------
+    sections["areas"] = area_text
+
+    sections["root"] = llm(f"""
+Generate Probable Root Cause.
+If unclear, say "Not Available".
+
+Context:
+{json.dumps(retrieve(embedder, index, docs, "root cause"), indent=2)}
+""")
+
+    sections["severity"] = llm(f"""
+Assess severity with reasoning.
+
+Context:
+{json.dumps(retrieve(embedder, index, docs, "severity extent damage"), indent=2)}
+""")
+
+    sections["actions"] = llm(f"""
+Generate Recommended Actions.
+
+Context:
+{json.dumps(retrieve(embedder, index, docs, "recommended actions"), indent=2)}
+""")
+
+    return sections
+
+
+# =======================
 # MAIN
-# -----------------------------
+# =======================
 def main():
     ensure_dirs()
 
-    ins_text = extract_text(INSPECTION_PDF)
-    th_text = extract_text(THERMAL_PDF)
+    inspection_text = extract_text(INSPECTION_PDF)
+    thermal_text = extract_text(THERMAL_PDF)
 
-    ins_imgs = extract_images(INSPECTION_PDF, IMG_INS_DIR)
-    th_imgs = extract_images(THERMAL_PDF, IMG_TH_DIR)
+    impacted_areas = extract_impacted_areas(inspection_text)
 
-    docs = inspection_chunks(ins_text) + thermal_chunks(th_text)
+    inspection_images = extract_inspection_images(
+        INSPECTION_PDF, INS_IMG_DIR
+    )
 
-    model, index = build_index(docs)
+    docs = (
+        chunk_by_area(inspection_text, "inspection", impacted_areas) +
+        chunk_by_area(thermal_text, "thermal", impacted_areas)
+    )
 
-    ddr = generate_ddr(AREAS, docs, model, index, ins_imgs, th_imgs)
+    area_images = map_images_to_areas(inspection_images, docs)
 
-    with open(OUT_MD, "w") as f:
-        f.write(ddr)
+    embedder, index = build_index(docs)
+    ddr = generate_ddr(embedder, index, docs, impacted_areas, area_images)
 
-    print("DDR generated:", OUT_MD)
+    with open(OUT_MD, "w", encoding="utf-8") as f:
+        f.write(f"""
+# Detailed Diagnostic Report
+
+## 1. Property Issue Summary
+{ddr['summary']}
+
+## 2. Area-wise Observations
+{ddr['areas']}
+
+## 3. Probable Root Cause
+{ddr['root']}
+
+## 4. Severity Assessment
+{ddr['severity']}
+
+## 5. Recommended Actions
+{ddr['actions']}
+
+## 6. Additional Notes
+Inspection images are included as supporting visual evidence only.
+
+## 7. Missing or Unclear Information
+- Plumbing layout: Not Available
+- Moisture meter readings: Not Available
+- Active leakage confirmation: Not Available
+
+## Appendix A: Inspection Photographs
+Inspection photographs are provided separately in the project folder and referenced by page number above.
+""")
+
+    print("DDR generated successfully:", OUT_MD)
+
 
 if __name__ == "__main__":
     main()
