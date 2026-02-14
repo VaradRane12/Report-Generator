@@ -31,6 +31,18 @@ AREAS = [
     "Terrace"
 ]
 
+def extract_impacted_areas(pages):
+    for p in pages:
+        if "Impacted Areas/Rooms" in p["text"]:
+            # split by commas and clean
+            parts = re.split(r",|\n", p["text"])
+            areas = []
+            for part in parts:
+                part = part.strip()
+                if part in AREAS:
+                    areas.append(part)
+            return list(dict.fromkeys(areas))  # preserve order, remove dups
+    return []
 
 # =======================
 # UTILS
@@ -237,7 +249,8 @@ def main():
 
     inspection_text = extract_text(INSPECTION_PDF)
     thermal_text = extract_text(THERMAL_PDF)
-
+    impacted_areas = extract_impacted_areas(inspection_text)
+    AREAS = impacted_areas
     extract_inspection_images(INSPECTION_PDF, INS_IMG_DIR)
 
     docs = (
