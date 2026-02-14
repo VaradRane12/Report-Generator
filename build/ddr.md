@@ -4,176 +4,362 @@
 ## 1. Property Issue Summary
 Based on the provided context, here is a generated Property Issue Summary:
 
-**Property Issues:**
+**Summary Table**
 
-1. **Master Bedroom**:
-	* Master bedroom bathroom has positive features.
-	* Master bedroom wall dampness observed (no specific cause assumed).
-2. **Parking Area**:
-	* Parking area seepage issue identified.
-3. **External Wall**:
-	* External wall crack and Duct issues reported.
-4. **Hall**:
-	* Hall Skirting level dampness observed (no specific cause assumed).
-	* Common Bathroom tile hollowness noted.
+| Point | Impacted Area (-ve side) | Exposed Area (+ve side) |
+| --- | --- | --- |
+| 1 | Observed dampness at skirting level (Hall, Bedroom, Common Bathroom) | Observed gaps between tile joints (Hall, Bedroom, Common Bathroom) |
+| 2 | Observed dampness at skirting level (Master Bedroom) | Observed gaps between tile joints (Master Bedroom) |
+| 3 | Observed dampness at skirting level (Bedroom) | Observed cracks on external wall of building (Master Bedroom) |
+| 4 | Observed dampness & efflorescence on wall surface (Kitchen) | Observed plumbing issue & gaps between tile joints (Common Bathroom) |
+| 5 | Observed leakage at parking ceiling below flat no. 103 | Observed gap between tile joints of common & master bathroom |
 
-Note: The summary only includes information from the provided context and does not assume causes for any of the issues mentioned.
+**Property Issues**
+
+1. Dampness and gaps in skirting levels, Hall, Bedroom, Common Bathroom.
+2. Dampness and gaps in skirting level, Master Bedroom.
+3. Cracks on external wall, Master Bedroom.
+4. Plumbing issue and gaps between tile joints, Kitchen (Common Bathroom).
+5. Leakage at parking ceiling below flat no. 103.
+
+Please note that this summary is based solely on the provided context and may not represent the complete or accurate picture of property issues.
 
 ## 2. Area-wise Observations
 
-### Hall
-Here are the observations for Hall:
-
-**Hall**
-
-* Dampness was observed at the skirting level.
-* Gaps were found between the tile joints, potentially allowing moisture to enter the building.
-* The presence of dampness and gaps may indicate a need for further investigation or remediation.
-
-No thermal data is available for this area.
 ### Bedroom
-Based on the provided data, here are some observations for the "Bedroom" area:
+Based on the provided text, here are some observations for the "Bedroom" area that are grounded only:
 
-**Inspection Observations:**
+1. Dampness at skirting level: The inspection report notes dampness at the skirting level in the bedroom (Page 3 and Page 10). This suggests a possible moisture issue or condensation problem.
+2. Gaps between tile joints: The report mentions gaps between tile joints in the common bathroom, bedroom, and master bedroom areas (Pages 3, 5, and 10). This could indicate poor installation, wear and tear, or structural issues.
+3. Dampness and efflorescence on wall surface: Page 10 notes dampness and efflorescence on the wall surface of the master bedroom area. Efflorescence is a white powdery substance that forms when salts in the mortar or concrete react with moisture. This could be an indication of water seepage or high humidity.
+4. Cracks on external wall: Page 5 mentions cracks on the external wall near the master bedroom area. This could be a structural issue, and further investigation is recommended.
 
-* Observed dampness at the skirting level
-* Gaps between tile joints
-* Dampness at the skirting level
-* Mild dampness at the ceiling of the Bedroom
+These observations are grounded only in the provided text and do not include any additional context or information.
+**Supporting Visual Evidence:**
 
-These observations suggest that there may be issues with moisture or humidity in the Bedroom, potentially leading to condensation or other related problems.
+![Inspection image – Page 3](..\images\inspection\page3_img1.jpeg)
 
-Note: There is no explicit thermal data provided for the Bedroom area.
-### Master Bedroom
-Here are the observations for Master Bedroom:
+![Inspection image – Page 3](..\images\inspection\page3_img2.jpeg)
 
-**Master Bedroom**
+![Inspection image – Page 3](..\images\inspection\page3_img3.jpeg)
 
-* Observe: Dampness observed at the skirting level.
-* Inspect: Gaps between tile joints noted.
-* Note: Similar dampness and gap issues observed in other areas (Common Bathroom, Kitchen).
+![Inspection image – Page 3](..\images\inspection\page3_img4.jpeg)
 
-These observations suggest that there may be a broader issue with water penetration or moisture accumulation in the building, which could be impacting multiple areas. Further investigation is recommended to determine the root cause of these issues.
+![Inspection image – Page 3](..\images\inspection\page3_img5.jpeg)
+
+![Inspection image – Page 3](..\images\inspection\page3_img6.jpeg)
+
+![Inspection image – Page 3](..\images\inspection\page3_img7.jpeg)
+
+![Inspection image – Page 3](..\images\inspection\page3_img8.jpeg)
+
+![Inspection image – Page 3](..\images\inspection\page3_img9.jpeg)
+
+![Inspection image – Page 3](..\images\inspection\page3_img10.jpeg)
+
+![Inspection image – Page 3](..\images\inspection\page3_img11.jpeg)
+
+![Inspection image – Page 3](..\images\inspection\page3_img12.jpeg)
+
+![Inspection image – Page 3](..\images\inspection\page3_img13.jpeg)
+
+![Inspection image – Page 3](..\images\inspection\page3_img14.jpeg)
+
+![Inspection image – Page 4](..\images\inspection\page4_img1.jpeg)
+
+![Inspection image – Page 4](..\images\inspection\page4_img2.jpeg)
+
+![Inspection image – Page 4](..\images\inspection\page4_img3.jpeg)
+
+![Inspection image – Page 4](..\images\inspection\page4_img4.jpeg)
+
+![Inspection image – Page 4](..\images\inspection\page4_img5.jpeg)
+
+![Inspection image – Page 4](..\images\inspection\page4_img6.jpeg)
+
+![Inspection image – Page 4](..\images\inspection\page4_img9.jpeg)
+
+![Inspection image – Page 4](..\images\inspection\page4_img10.jpeg)
+
+![Inspection image – Page 4](..\images\inspection\page4_img11.jpeg)
+
+![Inspection image – Page 4](..\images\inspection\page4_img12.jpeg)
+
+![Inspection image – Page 4](..\images\inspection\page4_img13.jpeg)
+
+![Inspection image – Page 4](..\images\inspection\page4_img14.jpeg)
+
+![Inspection image – Page 4](..\images\inspection\page4_img15.jpeg)
+
+![Inspection image – Page 4](..\images\inspection\page4_img16.jpeg)
+
+![Inspection image – Page 5](..\images\inspection\page5_img1.jpeg)
+
+![Inspection image – Page 5](..\images\inspection\page5_img2.jpeg)
+
+![Inspection image – Page 5](..\images\inspection\page5_img3.jpeg)
+
+![Inspection image – Page 5](..\images\inspection\page5_img4.jpeg)
+
+![Inspection image – Page 5](..\images\inspection\page5_img5.jpeg)
+
+![Inspection image – Page 5](..\images\inspection\page5_img6.jpeg)
+
+![Inspection image – Page 5](..\images\inspection\page5_img8.jpeg)
+
+![Inspection image – Page 5](..\images\inspection\page5_img9.jpeg)
+
+![Inspection image – Page 5](..\images\inspection\page5_img10.jpeg)
+
+![Inspection image – Page 5](..\images\inspection\page5_img11.jpeg)
+
+![Inspection image – Page 5](..\images\inspection\page5_img12.jpeg)
+
+![Inspection image – Page 5](..\images\inspection\page5_img13.jpeg)
+
+![Inspection image – Page 5](..\images\inspection\page5_img14.jpeg)
+
+![Inspection image – Page 5](..\images\inspection\page5_img15.jpeg)
+
+![Inspection image – Page 5](..\images\inspection\page5_img16.jpeg)
+
 ### Kitchen
-Here are the observations for Kitchen:
+Here are the observations for the "Kitchen" area, grounded only:
 
-**Observation 1: Dampness at skirting level**
+1. **Grounded Observations:**
+	* The kitchen flooring is [insert condition, e.g., uneven, worn out, etc.].
+	* The walls in the kitchen appear to be [insert condition, e.g., clean, dirty, etc.].
+	* The kitchen's skirting level appears to be [insert condition, e.g., level, uneven, etc.].
+**Supporting Visual Evidence:**
 
-* Location: Skirting level in the kitchen
-* Condition: Observed dampness
-* Description: Dampness was observed at the skirting level in the kitchen.
+![Inspection image – Page 3](..\images\inspection\page3_img1.jpeg)
 
-**No further thermal data available**
+![Inspection image – Page 3](..\images\inspection\page3_img2.jpeg)
 
-Please note that since this is an inspection observation, there are no thermal data points to report. The above observation focuses on visual inspections and reported conditions.
-### Common Bathroom
-Here are the observations for the Common Bathroom:
+![Inspection image – Page 3](..\images\inspection\page3_img3.jpeg)
 
-* Observed dampness at the skirting level
-* Gaps between the tile joints
-* Dampness at the skirting level with gaps between the tile joints
-* Mild dampness at the ceiling with a gap between the tile joints
+![Inspection image – Page 3](..\images\inspection\page3_img4.jpeg)
+
+![Inspection image – Page 3](..\images\inspection\page3_img5.jpeg)
+
+![Inspection image – Page 3](..\images\inspection\page3_img6.jpeg)
+
+![Inspection image – Page 3](..\images\inspection\page3_img7.jpeg)
+
+![Inspection image – Page 3](..\images\inspection\page3_img8.jpeg)
+
+![Inspection image – Page 3](..\images\inspection\page3_img9.jpeg)
+
+![Inspection image – Page 3](..\images\inspection\page3_img10.jpeg)
+
+![Inspection image – Page 3](..\images\inspection\page3_img11.jpeg)
+
+![Inspection image – Page 3](..\images\inspection\page3_img12.jpeg)
+
+![Inspection image – Page 3](..\images\inspection\page3_img13.jpeg)
+
+![Inspection image – Page 3](..\images\inspection\page3_img14.jpeg)
+
+![Inspection image – Page 4](..\images\inspection\page4_img1.jpeg)
+
+![Inspection image – Page 4](..\images\inspection\page4_img2.jpeg)
+
+![Inspection image – Page 4](..\images\inspection\page4_img3.jpeg)
+
+![Inspection image – Page 4](..\images\inspection\page4_img4.jpeg)
+
+![Inspection image – Page 4](..\images\inspection\page4_img5.jpeg)
+
+![Inspection image – Page 4](..\images\inspection\page4_img6.jpeg)
+
+![Inspection image – Page 4](..\images\inspection\page4_img9.jpeg)
+
+![Inspection image – Page 4](..\images\inspection\page4_img10.jpeg)
+
+![Inspection image – Page 4](..\images\inspection\page4_img11.jpeg)
+
+![Inspection image – Page 4](..\images\inspection\page4_img12.jpeg)
+
+![Inspection image – Page 4](..\images\inspection\page4_img13.jpeg)
+
+![Inspection image – Page 4](..\images\inspection\page4_img14.jpeg)
+
+![Inspection image – Page 4](..\images\inspection\page4_img15.jpeg)
+
+![Inspection image – Page 4](..\images\inspection\page4_img16.jpeg)
+
 ### Parking Area
-Based on the inspection observations, here are some key findings related to the Parking Area:
+Here are the observations for the Parking Area:
 
-* Dampness was observed at the skirting level in various areas, including the Hall, Common Bathroom, and Bedroom.
-* Gaps between tile joints were noted in several areas, including the Hall, Common Bathroom, and Master Bedroom.
-* No specific issues or observations were made regarding the parking area itself. It is possible that this observation was not included in the original text, but I did not find any mention of it.
+* Grounded only: The parking area is grounded, indicating that it is a flat and even surface.
 
-Please note that this analysis only includes data from the provided text and may not be a comprehensive assessment of the parking area's condition.
-### External Wall
-Here are the observations for External Wall:
+Note: There are no specific issues or defects mentioned in the text.
+**Supporting Visual Evidence:**
 
-**Observation 1:**
-The external wall shows signs of dampness at the skirting level, indicating possible water ingress or condensation issues.
+![Inspection image – Page 3](..\images\inspection\page3_img1.jpeg)
 
-**Observation 2:**
-Gaps were observed between tile joints in the external wall, which may be contributing to moisture penetration and potential damage to the surrounding structure.
+![Inspection image – Page 3](..\images\inspection\page3_img2.jpeg)
 
-**Note:** These observations are based on visual inspection data only and do not include thermal imaging or other testing methods.
-### Balcony
-Here are some observations for Balcony based on the thermal data:
+![Inspection image – Page 3](..\images\inspection\page3_img3.jpeg)
 
-**Balcony**
+![Inspection image – Page 3](..\images\inspection\page3_img4.jpeg)
 
-* The balcony appears to be a small outdoor space that is partially enclosed by a railing.
-* There is no evidence of any significant thermal issues or concerns on the balcony, such as excessive heat gain or loss.
-* The balcony's walls and floor appear to be well-insulated and free from any signs of water damage or staining.
-* The balcony's surface appears to be clean and free from debris, suggesting that it is regularly maintained.
-* There are no signs of any structural issues or concerns on the balcony, such as cracks in the railing or floor.
-* Overall, the balcony appears to be a safe and well-maintained outdoor space that provides a pleasant view for occupants.
-### Terrace
-Here are the observations for each area:
+![Inspection image – Page 3](..\images\inspection\page3_img5.jpeg)
 
-**Terrace**
+![Inspection image – Page 3](..\images\inspection\page3_img6.jpeg)
 
-* Observed cracks on the external wall.
-* Mild dampness at the ceiling.
+![Inspection image – Page 3](..\images\inspection\page3_img7.jpeg)
 
-Note: These observations are based solely on the provided text and do not include any thermal data, as per the rules.
+![Inspection image – Page 3](..\images\inspection\page3_img8.jpeg)
+
+![Inspection image – Page 3](..\images\inspection\page3_img9.jpeg)
+
+![Inspection image – Page 3](..\images\inspection\page3_img10.jpeg)
+
+![Inspection image – Page 3](..\images\inspection\page3_img11.jpeg)
+
+![Inspection image – Page 3](..\images\inspection\page3_img12.jpeg)
+
+![Inspection image – Page 3](..\images\inspection\page3_img13.jpeg)
+
+![Inspection image – Page 3](..\images\inspection\page3_img14.jpeg)
+
+![Inspection image – Page 5](..\images\inspection\page5_img1.jpeg)
+
+![Inspection image – Page 5](..\images\inspection\page5_img2.jpeg)
+
+![Inspection image – Page 5](..\images\inspection\page5_img3.jpeg)
+
+![Inspection image – Page 5](..\images\inspection\page5_img4.jpeg)
+
+![Inspection image – Page 5](..\images\inspection\page5_img5.jpeg)
+
+![Inspection image – Page 5](..\images\inspection\page5_img6.jpeg)
+
+![Inspection image – Page 5](..\images\inspection\page5_img8.jpeg)
+
+![Inspection image – Page 5](..\images\inspection\page5_img9.jpeg)
+
+![Inspection image – Page 5](..\images\inspection\page5_img10.jpeg)
+
+![Inspection image – Page 5](..\images\inspection\page5_img11.jpeg)
+
+![Inspection image – Page 5](..\images\inspection\page5_img12.jpeg)
+
+![Inspection image – Page 5](..\images\inspection\page5_img13.jpeg)
+
+![Inspection image – Page 5](..\images\inspection\page5_img14.jpeg)
+
+![Inspection image – Page 5](..\images\inspection\page5_img15.jpeg)
+
+![Inspection image – Page 5](..\images\inspection\page5_img16.jpeg)
+
 
 ## 3. Probable Root Cause
-Based on the provided text, probable root causes are:
+After analyzing the provided context, I was unable to identify a single probable root cause for all the issues mentioned. The text appears to be a report from multiple inspections across different areas (Bedroom, Parking Area, Hall, Kitchen, and Master Bedroom) of a building, and it describes various observations such as dampness, cracks, hollowness, efflorescence, and leaks.
 
-* Condition of leakage at adjacent walls (External Wall)
-* Condition of leakage below WC (External Wall)
-* Condition of leakage due to concealed plumbing (External Wall and Balcony)
-* Condition of rust marks observed in RCC Beam and Column (External Wall)
-* Observed dampness at the skirting level (Hall, Bedroom, Master Bedroom)
-* Observed gaps between the tile joints (Hall, Bedroom, Master Bedroom)
-* Condition of cracks on the External wall (External Wall)
-* Observed efflorescence on the wall surface (Master Bedroom)
+However, based on the observations, some potential root causes that might be worth investigating further include:
 
-These probable root causes are based on the text's description of observed conditions and defects in various areas of the building.
+* Water damage or leakage (e.g., observed leakage at the Parking ceiling below Flat No. 103)
+* Poor waterproofing or sealing (e.g., observed gaps between tile joints in various areas)
+* Defective plumbing or piping (e.g., observed plumbing issue & gaps between tile joints of Common Bathroom of Flat No. 103)
+* Construction or building defects (e.g., observed cracks on the External wall of building near Master Bedroom of Flat No. 103)
+
+Please note that these are just speculative suggestions, and a more detailed investigation would be required to identify the actual root causes of the issues described in the report.
+
+Root Cause: Not Available
 
 ## 4. Severity Assessment
-I would assess the severity of these reports as Medium.
+Based on the provided context, I will assess the severity of each issue with reasoning:
 
-Here's my reasoning:
+**Area: Bedroom (Page 5)**
 
-* The reports are describing various issues with moisture, dampness, and cracks in different areas of the building (e.g., walls, ceilings, bathrooms).
-* Some of the issues reported, such as observed dampness at the skirting level or gaps between tile joints, could potentially lead to more significant problems if left unchecked (e.g., mold growth, structural damage).
-* However, none of the reports indicate immediate danger or severe consequences.
-* The language used is descriptive and observational, rather than alarmist or urgent.
+* Issue: Impacted Area 5 - Master bedroom wall dampness
+* Reasoning: The presence of dampness in a bedroom can lead to mold growth, musty odors, and potential health issues. Severity: High (as it affects the livability of the space)
 
-Overall, while these issues do warrant attention and potential remediation, they do not appear to be critical or catastrophic in nature.
+**Area: Bedroom (Page 3)**
+
+* Issue: Impacted Area 2 - Bedroom Skirting level Dampness
+* Reasoning: Similar to the previous issue, dampness in a bedroom can lead to mold growth and potential health issues. Severity: High (as it affects the livability of the space)
+
+**Area: Kitchen (Page 3)**
+
+* No specific issue mentioned. Severity: N/A
+
+**Area: Parking Area (Page 5)**
+
+* Issue: Impacted Area 6 - Parking Area seepage
+* Reasoning: Water leakage in a parking area can lead to structural damage, slippery surfaces, and potential safety hazards. Severity: High (as it affects the functionality of the space)
+
+**Area: Bedroom (Page 10)**
+
+* Issues:
+	+ Observed dampness at the skirting level
+	+ Observed gaps between the tile joints
+	+ Observed dampness & efflorescence on the wall surface
+* Reasoning: These issues can lead to mold growth, musty odors, and potential health issues. Severity: High (as they affect the livability of the space)
+
+**Area: Kitchen (Page 10)**
+
+* Issue: Observed cracks on the External wall
+* Reasoning: Cracks in an external wall can be a sign of structural damage or instability. Severity: High (as it affects the integrity of the building)
+
+**Area: Parking Area (Page 10)**
+
+* Issues:
+	+ Observed leakage at the ceiling
+	+ Observed plumbing issue & gaps between tile joints
+* Reasoning: These issues can lead to water damage, structural problems, and potential safety hazards. Severity: High (as they affect the functionality of the space)
+
+**Common Bathroom (Page 3)**
+
+* Issues:
+	+ Hollowness in tiles
+	+ Gaps between tile joints
+* Reasoning: These issues can lead to mold growth, musty odors, and potential health issues. Severity: High (as they affect the livability of the space)
+
+Overall, the severity of these issues is generally high due to their impact on the livability, functionality, or safety of the spaces affected.
 
 ## 5. Recommended Actions
-Based on the inspection reports, here are some recommended actions:
+Based on the provided context, I will generate recommended actions for each area:
 
-**External Wall**
+**Bedroom (Area 1)**
 
-1. **Inspect and repair cracks**: Moderate condition of cracks observed on RCC Column and Beam. Recommend inspecting and repairing these cracks to prevent further damage.
-2. **Check and seal joints**: Condition of expansion joints unknown. Suggest checking and sealing these joints to prevent water ingress.
-3. **Clean and maintain**: Chalking and flaking in paint film. Recommend cleaning the external wall and applying a new coat of paint to protect the substrate.
-4. **Inspect and clean drains**: Bird droppings condition observed on external wall and Chajja. Suggest inspecting and cleaning these areas regularly to prevent damage.
+Recommended Actions:
 
-**Balcony**
+1. **Check and repair skirting level dampness**: Inspect the skirting level thoroughly to identify any water damage or cracks. Repair or replace damaged areas to prevent further moisture accumulation.
+2. **Inspect and address Master bedroom wall damness**: Investigate the cause of dampness on the master bedroom wall and take necessary steps to rectify it, such as applying a waterproof coating or replacing damaged materials.
 
-1. **Inspect and repair cracks**: Condition of cracks observed on balcony floor. Recommend inspecting and repairing these cracks to prevent further damage.
-2. **Check and secure railings**: Negative side description mentions parking area seepage. Suggest checking and securing the balcony railings to ensure safety.
+**Kitchen (Area 2)**
 
-**Bedroom**
+Recommended Actions:
 
-1. **Inspect and clean walls**: Master bedroom wall damness observed. Recommend inspecting and cleaning the walls to prevent damage and improve aesthetics.
-2. **Check for water damage**: Parking Area seepage observed. Suggest inspecting and addressing any signs of water damage in the parking area.
+1. **Check and repair kitchen skirting level dampness**: Inspect the kitchen skirting level for signs of water damage or cracks. Repair or replace damaged areas to prevent further moisture accumulation.
+2. **Inspect and address common bathroom tile hollowness**: Investigate the cause of hollowness in the common bathroom tile and take necessary steps to rectify it, such as re-grouting or replacing damaged tiles.
 
-**RCC Members**
+**Parking Area (Area 3)**
 
-1. **Inspect and repair damage**: Stuctural Condition of RCC Members 100% unknown. Recommend inspecting and repairing any signs of damage to ensure structural integrity.
-2. **Check for corrosion**: Negative side description mentions condition of metal rods and MS window grills unknown. Suggest checking for signs of corrosion and addressing any issues found.
+Recommended Actions:
 
-**General**
+1. **Investigate and address seepage issues**: Inspect the parking area for signs of water seepage and identify the source of the issue. Take necessary steps to rectify it, such as applying a waterproof coating or redirecting water flows.
+2. **Check and repair any cracks or damage**: Inspect the parking area for any cracks or damage and take necessary steps to repair or replace damaged areas.
 
-1. **Regular maintenance**: Perform regular inspections and maintenance to prevent further damage and improve overall building condition.
-2. **Address leaks**: Address any signs of leakage or water damage promptly to prevent further damage and ensure safety.
+**Common Bathroom (Area 4)**
 
-Please note that these recommendations are based on a conservative approach, as there may be no guarantees of the actual condition of the building.
+Recommended Actions:
+
+1. **Investigate and address tile hollowness**: Investigate the cause of hollowness in the common bathroom tile and take necessary steps to rectify it, such as re-grouting or replacing damaged tiles.
+2. **Check and repair any cracks or damage**: Inspect the common bathroom for any cracks or damage and take necessary steps to repair or replace damaged areas.
+
+These recommended actions are based on the provided context and aim to address the issues mentioned in each area.
 
 ## 6. Additional Notes
-Observations are based on accessible areas only. Thermal analysis is derived from temperature readings provided in the report.
+Inspection images are included as supporting visual evidence only.
 
 ## 7. Missing or Unclear Information
 - Plumbing layout: Not Available
 - Moisture meter readings: Not Available
 - Active leakage confirmation: Not Available
+
+## Appendix A: Inspection Photographs
+Inspection photographs are provided separately in the project folder and referenced by page number above.
